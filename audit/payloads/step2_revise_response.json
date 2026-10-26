@@ -1,0 +1,148 @@
+{
+  "plan_id": "e12561d3-30b5-409c-9e59-b4f3d55f6769",
+  "plan": {
+    "analysis": [
+      "Requirements state we need to calculate Total Net Sales (sum of NETWR from VBAK) and Order Count (sum of Order_Count = 1) grouped by Customer Country (LAND1 from KNA1).",
+      "Join VBAK with VBRP on VBELN (1:N) and VBAK with KNA1 on KUNNR (N:1) using explicitly qualified join keys.",
+      "Construct L1 wrappers for VBAK, VBRP, and KNA1.",
+      "Construct an L3 fact view combining VBAK, VBRP, and KNA1, defining the row-level formula for Order_Count.",
+      "Construct an L4 analytic model providing the final aggregate measures.",
+      "User requested to change the join type between VBAK and KNA1 to a left outer join."
+    ],
+    "nodes": [
+      {
+        "id": "L1_VBAK",
+        "operation": "projection",
+        "inputs": [
+          "VBAK"
+        ],
+        "columns": [
+          "VBELN",
+          "KUNNR",
+          "NETWR"
+        ],
+        "calculated_fields": [],
+        "details": {
+          "join_type": "",
+          "on": [],
+          "condition": "",
+          "formula": "",
+          "aggregation": ""
+        },
+        "reason": "Expose required header columns for joins and net sales calculation.",
+        "is_existing": false,
+        "layer": ""
+      },
+      {
+        "id": "L1_VBRP",
+        "operation": "projection",
+        "inputs": [
+          "VBRP"
+        ],
+        "columns": [
+          "VBELN",
+          "POSNR"
+        ],
+        "calculated_fields": [],
+        "details": {
+          "join_type": "",
+          "on": [],
+          "condition": "",
+          "formula": "",
+          "aggregation": ""
+        },
+        "reason": "Expose required item columns for document joining.",
+        "is_existing": false,
+        "layer": ""
+      },
+      {
+        "id": "L1_KNA1",
+        "operation": "projection",
+        "inputs": [
+          "KNA1"
+        ],
+        "columns": [
+          "KUNNR",
+          "LAND1"
+        ],
+        "calculated_fields": [],
+        "details": {
+          "join_type": "",
+          "on": [],
+          "condition": "",
+          "formula": "",
+          "aggregation": ""
+        },
+        "reason": "Expose customer master columns for country grouping.",
+        "is_existing": false,
+        "layer": ""
+      },
+      {
+        "id": "L3_FACT_SALES",
+        "operation": "join",
+        "inputs": [
+          "L1_VBAK",
+          "L1_VBRP",
+          "L1_KNA1"
+        ],
+        "columns": [
+          "VBELN",
+          "KUNNR",
+          "NETWR",
+          "LAND1",
+          "Order_Count"
+        ],
+        "calculated_fields": [
+          {
+            "name": "Order_Count",
+            "formula": "1",
+            "label": "Order Count Flag",
+            "data_type": "INTEGER"
+          }
+        ],
+        "details": {
+          "join_type": "LEFT",
+          "on": [
+            [
+              "L1_VBAK.VBELN",
+              "L1_VBRP.VBELN"
+            ],
+            [
+              "L1_VBAK.KUNNR",
+              "L1_KNA1.KUNNR"
+            ]
+          ],
+          "condition": "",
+          "formula": "",
+          "aggregation": ""
+        },
+        "reason": "Join header, item, and customer tables using explicitly qualified keys with left joins and generate the Order_Count row-level formula.",
+        "is_existing": false,
+        "layer": ""
+      }
+    ],
+    "measures": [
+      {
+        "name": "Total_Net_Sales",
+        "aggregation": "SUM",
+        "column": "NETWR"
+      },
+      {
+        "name": "Total_Order_Count",
+        "aggregation": "SUM",
+        "column": "Order_Count"
+      }
+    ],
+    "dimensions": [
+      "LAND1"
+    ],
+    "assumptions": [
+      "Order_Count is defined as a constant 1 per row or per order as specified by the formula requirement."
+    ],
+    "blockers": []
+  },
+  "affected_nodes": [
+    "L3_FACT_SALES"
+  ],
+  "updated_at": "2026-10-26T17:35:36.397032+00:00"
+}

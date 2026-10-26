@@ -1,0 +1,149 @@
+{
+  "plan_id": "e12561d3-30b5-409c-9e59-b4f3d55f6769",
+  "request_id": "84f622be-3dd4-4484-813b-e8fab74b45af",
+  "plan": {
+    "analysis": [
+      "Requirements state we need to calculate Total Net Sales (sum of NETWR from VBAK) and Order Count (sum of Order_Count = 1) grouped by Customer Country (LAND1 from KNA1).",
+      "Join VBAK with VBRP on VBELN (1:N) and VBAK with KNA1 on KUNNR (N:1) using explicitly qualified join keys.",
+      "Construct L1 wrappers for VBAK, VBRP, and KNA1.",
+      "Construct an L3 fact view combining VBAK, VBRP, and KNA1, defining the row-level formula for Order_Count.",
+      "Construct an L4 analytic model providing the final aggregate measures."
+    ],
+    "nodes": [
+      {
+        "id": "L1_VBAK",
+        "operation": "projection",
+        "inputs": [
+          "VBAK"
+        ],
+        "columns": [
+          "VBELN",
+          "KUNNR",
+          "NETWR"
+        ],
+        "calculated_fields": [],
+        "details": {
+          "join_type": "",
+          "on": [],
+          "condition": "",
+          "formula": "",
+          "aggregation": ""
+        },
+        "reason": "Expose required header columns for joins and net sales calculation.",
+        "is_existing": false,
+        "layer": ""
+      },
+      {
+        "id": "L1_VBRP",
+        "operation": "projection",
+        "inputs": [
+          "VBRP"
+        ],
+        "columns": [
+          "VBELN",
+          "POSNR"
+        ],
+        "calculated_fields": [],
+        "details": {
+          "join_type": "",
+          "on": [],
+          "condition": "",
+          "formula": "",
+          "aggregation": ""
+        },
+        "reason": "Expose required item columns for document joining.",
+        "is_existing": false,
+        "layer": ""
+      },
+      {
+        "id": "L1_KNA1",
+        "operation": "projection",
+        "inputs": [
+          "KNA1"
+        ],
+        "columns": [
+          "KUNNR",
+          "LAND1"
+        ],
+        "calculated_fields": [],
+        "details": {
+          "join_type": "",
+          "on": [],
+          "condition": "",
+          "formula": "",
+          "aggregation": ""
+        },
+        "reason": "Expose customer master columns for country grouping.",
+        "is_existing": false,
+        "layer": ""
+      },
+      {
+        "id": "L3_FACT_SALES",
+        "operation": "join",
+        "inputs": [
+          "L1_VBAK",
+          "L1_VBRP",
+          "L1_KNA1"
+        ],
+        "columns": [
+          "VBELN",
+          "KUNNR",
+          "NETWR",
+          "LAND1",
+          "Order_Count"
+        ],
+        "calculated_fields": [
+          {
+            "name": "Order_Count",
+            "formula": "1",
+            "label": "Order Count Flag",
+            "data_type": "INTEGER"
+          }
+        ],
+        "details": {
+          "join_type": "LEFT",
+          "on": [
+            [
+              "L1_VBAK.VBELN",
+              "L1_VBRP.VBELN"
+            ],
+            [
+              "L1_VBAK.KUNNR",
+              "L1_KNA1.KUNNR"
+            ]
+          ],
+          "condition": "",
+          "formula": "",
+          "aggregation": ""
+        },
+        "reason": "Join header, item, and customer tables using explicitly qualified keys and generate the Order_Count row-level formula.",
+        "is_existing": false,
+        "layer": ""
+      }
+    ],
+    "measures": [
+      {
+        "name": "Total_Net_Sales",
+        "aggregation": "SUM",
+        "column": "NETWR"
+      },
+      {
+        "name": "Total_Order_Count",
+        "aggregation": "SUM",
+        "column": "Order_Count"
+      }
+    ],
+    "dimensions": [
+      "LAND1"
+    ],
+    "assumptions": [
+      "Order_Count is defined as a constant 1 per row or per order as specified by the formula requirement."
+    ],
+    "blockers": []
+  },
+  "metadata_summary": "[TABLE] VBAK (Sales Document Header)\n  KEYS: VBELN\n  COLUMNS: VBELN (NVARCHAR(10), key), ERDAT (DATE), KUNNR (NVARCHAR(10)), STATUS (NVARCHAR(20)), NETWR (DECIMAL(15,2), measure, agg:SUM), WAERK (NVARCHAR(5))\n  MEASURES: NETWR\n\n[TABLE] VBRP (Sales Document Item)\n  KEYS: VBELN, POSNR\n  COLUMNS: VBELN (NVARCHAR(10), key), POSNR (NUMC(6), key), MATNR (NVARCHAR(18)), FKIMG (DECIMAL(13,3), measure, agg:SUM), NETWR (DECIMAL(15,2), measure, agg:SUM)\n  MEASURES: FKIMG, NETWR\n\n[TABLE] KNA1 (Customer Master)\n  KEYS: KUNNR\n  COLUMNS: KUNNR (NVARCHAR(10), key), NAME1 (NVARCHAR(35)), LAND1 (NVARCHAR(3)), REGIO (NVARCHAR(3)), ORT01 (NVARCHAR(35))",
+  "profile_summary": "=== DATA PROFILE ===\n[METADATA-INFERRED PROFILE (No mock CSV data provided)]\n\nTABLE/VIEW VBAK: (row count unknown)\n  - VBELN: distinct count unprofiled\n  - ERDAT: distinct count unprofiled\n  - KUNNR: distinct count unprofiled\n  - STATUS: distinct count unprofiled\n  - NETWR: distinct count unprofiled\n  - WAERK: distinct count unprofiled\n\nTABLE/VIEW VBRP: (row count unknown)\n  - VBELN: distinct count unprofiled\n  - POSNR: distinct count unprofiled\n  - MATNR: distinct count unprofiled\n  - FKIMG: distinct count unprofiled\n  - NETWR: distinct count unprofiled\n\nTABLE/VIEW KNA1: (row count unknown)\n  - KUNNR: distinct count unprofiled\n  - NAME1: distinct count unprofiled\n  - LAND1: distinct count unprofiled\n  - REGIO: distinct count unprofiled\n  - ORT01: distinct count unprofiled\n\nJOIN CANDIDATES & CARDINALITY EVIDENCE:\n  - VBAK.NETWR <-> VBRP.NETWR:\n    * Cardinality: 1:N\n    * Evidence: \"Key match for NETWR between VBAK and VBRP inferred from schema (1:N cardinality).\"\n\n  - VBAK.VBELN <-> VBRP.VBELN:\n    * Cardinality: 1:N\n    * Evidence: \"Key match for VBELN between VBAK and VBRP inferred from schema (1:N cardinality).\"\n\n  - VBAK.KUNNR <-> KNA1.KUNNR:\n    * Cardinality: N:1\n    * Evidence: \"Key match for KUNNR between VBAK and KNA1 inferred from schema (N:1 cardinality).\"",
+  "sample_data_summary": "No sample data provided. Planning based on metadata alone.",
+  "warnings": [],
+  "created_at": "2026-10-26T17:34:11.856913+00:00"
+}

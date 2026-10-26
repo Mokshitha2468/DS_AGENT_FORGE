@@ -1,0 +1,632 @@
+{
+  "case_a_clean": {
+    "run1": {
+      "status": "failed",
+      "attempts": 3,
+      "error": "Failed to generate a valid plan after 3 attempts. Last errors: Node 'L0_VBAK' (projection) selects column 'VBELN' which does not exist in its input(s) or existing metadata. Available: []; Node 'L0_VBAK' (projection) selects column 'KUNNR' which does not exist in its input(s) or existing metadata. Available: []; Node 'L0_VBAK' (projection) selects column 'NETWR' which does not exist in its input(s) or existing metadata. Available: []; Node 'L0_VBRP' (projection) selects column 'VBELN' which does not exist in its input(s) or existing metadata. Available: []; Node 'L0_VBRP' (projection) selects column 'POSNR' which does not exist in its input(s) or existing metadata. Available: []; Node 'L0_VBRP' (projection) selects column 'FKIMG' which does not exist in its input(s) or existing metadata. Available: []; Node 'L0_KNA1' (projection) selects column 'KUNNR' which does not exist in its input(s) or existing metadata. Available: []; Node 'L0_KNA1' (projection) selects column 'NAME1' which does not exist in its input(s) or existing metadata. Available: []",
+      "last_response": "{\n \"analysis\": [\n  \"The requirement asks for Total Net Sales (sum of NETWR from VBAK) and Billed Quantity (sum of FKIMG from VBRP) grouped by Customer Name (NAME1 from KNA1).\",\n  \"We need to join VBAK with VBRP on VBELN and VBAK with KNA1 on KUNNR.\",\n  \"Data profile evidence confirms VBELN key match between VBAK and VBRP is 100.0% (1:N cardinality).\",\n  \"Data profile evidence confirms KUNNR key match between VBAK and KNA1 is 100.0% (N:1 cardinality).\",\n  \"We must define L0 source objects, L1 wrapper datasets for VBAK, VBRP, and KNA1, one L3 fact view, and one L4 analytic model.\"\n ],\n \"nodes\": [\n  {\n   \"id\": \"L0_VBAK\",\n   \"operation\": \"projection\",\n   \"inputs\": [],\n   \"columns\": [\n    \"VBELN\",\n    \"KUNNR\",\n    \"NETWR\"\n   ],\n   \"calculated_fields\": [],\n   \"details\": {\n    \"join_type\": \"\",\n    \"on\": [],\n    \"condition\": \"\",\n    \"formula\": \"\",\n    \"aggregation\": \"\"\n   },\n   \"reason\": \"Source table VBAK providing sales document header details.\"\n  },\n  {\n   \"id\": \"L0_VBRP\",\n   \"operation\": \"projection\",\n   \"inputs\": [],\n   \"columns\": [\n    \"VBELN\",\n    \"POSNR\",\n    \"FKIMG\"\n   ],\n   \"calculated_fields\": [],\n   \"details\": {\n    \"join_type\": \"\",\n    \"on\": [],\n    \"condition\": \"\",\n    \"formula\": \"\",\n    \"aggregation\": \"\"\n   },\n   \"reason\": \"Source table VBRP providing sales document item details.\"\n  },\n  {\n   \"id\": \"L0_KNA1\",\n   \"operation\": \"projection\",\n   \"inputs\": [],\n   \"columns\": [\n    \"KUNNR\",\n    \"NAME1\"\n   ],\n   \"calculated_fields\": [],\n   \"details\": {\n    \"join_type\": \"\",\n    \"on\": [],\n    \"condition\": \"\",\n    \"formula\": \"\",\n    \"aggregation\": \"\"\n   },\n   \"reason\": \"Source table KNA1 providing customer master details.\"\n  },\n  {\n   \"id\": \"L1_VBAK\",\n   \"operation\": \"projection\",\n   \"inputs\": [\n    \"L0_VBAK\"\n   ],\n   \"columns\": [\n    \"VBELN\",\n    \"KUNNR\",\n    \"NETWR\"\n   ],\n   \"calculated_fields\": [],\n   \"details\": {\n    \"join_type\": \"\",\n    \"on\": [],\n    \"condition\": \"\",\n    \"formula\": \"\",\n    \"aggregation\": \"\"\n   },\n   \"reason\": \"L1 configurable wrapper for VBAK.\"\n  },\n  {\n   \"id\": \"L1_VBRP\",\n   \"operation\": \"projection\",\n   \"inputs\": [\n    \"L0_VBRP\"\n   ],\n   \"columns\": [\n    \"VBELN\",\n    \"POSNR\",\n    \"FKIMG\"\n   ],\n   \"calculated_fields\": [],\n   \"details\": {\n    \"join_type\": \"\",\n    \"on\": [],\n    \"condition\": \"\",\n    \"formula\": \"\",\n    \"aggregation\": \"\"\n   },\n   \"reason\": \"L1 configurable wrapper for VBRP.\"\n  },\n  {\n   \"id\": \"L1_KNA1\",\n   \"operation\": \"projection\",\n   \"inputs\": [\n    \"L0_KNA1\"\n   ],\n   \"columns\": [\n    \"KUNNR\",\n    \"NAME1\"\n   ],\n   \"calculated_fields\": [],\n   \"details\": {\n    \"join_type\": \"\",\n    \"on\": [],\n    \"condition\": \"\",\n    \"formula\": \"\",\n    \"aggregation\": \"\"\n   },\n   \"reason\": \"L1 configurable wrapper for KNA1.\"\n  },\n  {\n   \"id\": \"L3_FACT_SALES\",\n   \"operation\": \"join\",\n   \"inputs\": [\n    \"L1_VBAK\",\n    \"L1_VBRP\",\n    \"L1_KNA1\"\n   ],\n   \"columns\": [\n    \"VBELN\",\n    \"POSNR\",\n    \"KUNNR\",\n    \"NETWR\",\n    \"FKIMG\",\n    \"NAME1\"\n   ],\n   \"calculated_fields\": [],\n   \"details\": {\n    \"join_type\": \"left\",\n    \"on\": [\n     [\n      \"L1_VBAK.VBELN\",\n      \"L1_VBRP.VBELN\"\n     ],\n     [\n      \"L1_VBAK.KUNNR\",\n      \"L1_KNA1.KUNNR\"\n     ]\n    ],\n    \"condition\": \"\",\n    \"formula\": \"\",\n    \"aggregation\": \"\"\n   },\n   \"reason\": \"Join VBAK with VBRP on VBELN and VBAK with KNA1 on KUNNR to combine header, item, and customer details.\"\n  },\n  {\n   \"id\": \"L4_ANALYTIC_SALES\",\n   \"operation\": \"analytic_model\",\n   \"inputs\": [\n    \"L3_FACT_SALES\"\n   ],\n   \"columns\": [\n    \"NAME1\"\n   ],\n   \"calculated_fields\": [],\n   \"details\": {\n    \"join_type\": \"\",\n    \"on\": [],\n    \"condition\": \"\",\n    \"formula\": \"\",\n    \"aggregation\": \"\"\n   },\n   \"reason\": \"Expose analytic model for reporting Total Net Sales and Billed Quantity grouped by Customer Name.\"\n  }\n ],\n \"measures\": [\n  {\n   \"name\": \"TotalNetSales\",\n   \"aggregation\": \"SUM\",\n   \"column\": \"NETWR\",\n   \"formula\": \"\",\n   \"label\": \"Total Net Sales\"\n  },\n  {\n   \"name\": \"BilledQuantity\",\n   \"aggregation\": \"SUM\",\n   \"column\": \"FKIMG\",\n   \"formula\": \"\",\n   \"label\": \"Billed Quantity\"\n  }\n ],\n \"dimensions\": [\n  \"NAME1\"\n ],\n \"assumptions\": [\n  \"Left join is used from VBAK to VBRP and KNA1 to preserve all sales documents.\"\n ],\n \"blockers\": []\n}",
+      "attempt_errors": [
+        [
+          "JSON syntax error: Expecting property name enclosed in double quotes at line 12"
+        ],
+        [
+          "Node 'L0_VBAK' (projection) selects column 'VBELN' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_VBAK' (projection) selects column 'KUNNR' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_VBAK' (projection) selects column 'NETWR' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_VBRP' (projection) selects column 'VBELN' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_VBRP' (projection) selects column 'FKIMG' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_KNA1' (projection) selects column 'KUNNR' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_KNA1' (projection) selects column 'NAME1' which does not exist in its input(s) or existing metadata. Available: []"
+        ],
+        [
+          "Node 'L0_VBAK' (projection) selects column 'VBELN' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_VBAK' (projection) selects column 'KUNNR' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_VBAK' (projection) selects column 'NETWR' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_VBRP' (projection) selects column 'VBELN' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_VBRP' (projection) selects column 'POSNR' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_VBRP' (projection) selects column 'FKIMG' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_KNA1' (projection) selects column 'KUNNR' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_KNA1' (projection) selects column 'NAME1' which does not exist in its input(s) or existing metadata. Available: []"
+        ]
+      ]
+    },
+    "run2": {
+      "status": "success",
+      "attempts": 1,
+      "plan": {
+        "analysis": [
+          "Requirement is to calculate Total Net Sales (sum of VBAK.NETWR) and Billed Quantity (sum of VBRP.FKIMG) grouped by Customer Name (KNA1.NAME1).",
+          "Join VBAK with VBRP on VBELN (1:N cardinality, verified by data profile evidence).",
+          "Join VBAK with KNA1 on KUNNR (N:1 cardinality, verified by data profile evidence).",
+          "L1 wrappers created for VBAK, VBRP, and KNA1.",
+          "L3 fact view combines VBAK, VBRP, and KNA1 using left joins, exposes necessary columns and measures inputs.",
+          "L4 analytic model exposes dimensions and aggregates measures."
+        ],
+        "nodes": [
+          {
+            "id": "L1_VBAK",
+            "operation": "projection",
+            "inputs": [
+              "VBAK"
+            ],
+            "columns": [
+              "VBELN",
+              "KUNNR",
+              "NETWR"
+            ],
+            "calculated_fields": [],
+            "details": {
+              "join_type": "",
+              "on": [],
+              "condition": "",
+              "formula": "",
+              "aggregation": ""
+            },
+            "reason": "Wrapper for VBAating source table VBAK projecting required columns.",
+            "is_existing": false,
+            "is_wrapper": false,
+            "is_projection_enabled": false,
+            "is_filter_enabled": false,
+            "layer": ""
+          },
+          {
+            "id": "L1_VBRP",
+            "operation": "projection",
+            "inputs": [
+              "VBRP"
+            ],
+            "columns": [
+              "VBELN",
+              "POSNR",
+              "FKIMG"
+            ],
+            "calculated_fields": [],
+            "details": {
+              "join_type": "",
+              "on": [],
+              "condition": "",
+              "formula": "",
+              "aggregation": ""
+            },
+            "reason": "Wrapper for source table VBRP projecting required columns.",
+            "is_existing": false,
+            "is_wrapper": false,
+            "is_projection_enabled": false,
+            "is_filter_enabled": false,
+            "layer": ""
+          },
+          {
+            "id": "L1_KNA1",
+            "operation": "projection",
+            "inputs": [
+              "KNA1"
+            ],
+            "columns": [
+              "KUNNR",
+              "NAME1"
+            ],
+            "calculated_fields": [],
+            "details": {
+              "join_type": "",
+              "on": [],
+              "condition": "",
+              "formula": "",
+              "aggregation": ""
+            },
+            "reason": "Wrapper for source table KNA1 projecting required columns.",
+            "is_existing": false,
+            "is_wrapper": false,
+            "is_projection_enabled": false,
+            "is_filter_enabled": false,
+            "layer": ""
+          },
+          {
+            "id": "L3_FACT_SALES",
+            "operation": "join",
+            "inputs": [
+              "L1_VBAK",
+              "L1_VBRP",
+              "L1_KNA1"
+            ],
+            "columns": [
+              "VBELN",
+              "KUNNR",
+              "NETWR",
+              "FKIMG",
+              "NAME1"
+            ],
+            "calculated_fields": [],
+            "details": {
+              "join_type": "left",
+              "on": [
+                [
+                  "L1_VBAK.VBELN",
+                  "L1_VBRP.VBELN"
+                ],
+                [
+                  "L1_VBAK.KUNNR",
+                  "L1_KNA1.KUNNR"
+                ]
+              ],
+              "condition": "",
+              "formula": "",
+              "aggregation": ""
+            },
+            "reason": "Joins VBAK with VBRP on VBELN (1:N cardinality) and KNA1 on KUNNR (N:1 cardinality) to assemble sales header, item, and customer details.",
+            "is_existing": false,
+            "is_wrapper": false,
+            "is_projection_enabled": false,
+            "is_filter_enabled": false,
+            "layer": ""
+          },
+          {
+            "id": "L4_ANALYTIC_MODEL",
+            "operation": "analytic_model",
+            "inputs": [
+              "L3_FACT_SALES"
+            ],
+            "columns": [
+              "NAME1"
+            ],
+            "calculated_fields": [],
+            "details": {
+              "join_type": "",
+              "on": [],
+              "condition": "",
+              "formula": "",
+              "aggregation": ""
+            },
+            "reason": "Exposes the analytic model containing dimensions and measures for reporting.",
+            "is_existing": false,
+            "is_wrapper": false,
+            "is_projection_enabled": false,
+            "is_filter_enabled": false,
+            "layer": ""
+          }
+        ],
+        "measures": [
+          {
+            "name": "TOTAL_NET_SALES",
+            "aggregation": "SUM",
+            "column": "NETWR",
+            "formula": "",
+            "label": "Total Net Sales"
+          },
+          {
+            "name": "BILLED_QUANTITY",
+            "aggregation": "SUM",
+            "column": "FKIMG",
+            "formula": "",
+            "label": "Billed Quantity"
+          }
+        ],
+        "dimensions": [
+          "NAME1"
+        ],
+        "assumptions": [
+          "Left join from VBAK to VBRP and KNA1 is appropriate to keep all sales documents."
+        ],
+        "blockers": []
+      },
+      "attempt_errors": [
+        []
+      ]
+    }
+  },
+  "case_b_missing_col": {
+    "run1": {
+      "status": "failed",
+      "attempts": 3,
+      "error": "Failed to generate a valid plan after 3 attempts. Last errors: Plan must contain exactly one analytic_model node, got 0.",
+      "last_response": "{\"analysis\": [\n    \"The requirement asks to calculate Net Margin Percentage = (NETWR - DISCOUNT) / NETWR grouped by Customer Country (LAND1). Join VBAK with KNA1 on KUNNR.\",\n    \"Checking source metadata for DISCOUNT: Neither VBAK nor KNA1 nor VBRP contains a DISCOUNT column. This creates a blocker.\",\n    \"However, we must strictly use available columns. Since DISCOUNT is missing, we must list it under blockers.\"\n  ],\n  \"nodes\": [\n    {\n      \"id\": \"L1_VBAK\",\n      \"operation\": \"projection\",\n      \"inputs\": [\"VBAK\"],\n      \"columns\": [\"VBELN\", \"KUNNR\", \"NETWR\"],\n      \"calculated_fields\": [],\n      \"details\": {},\n      \"reason\": \"Wrapper for VBAK source.\"\n    },\n    {\n      \"id\": \"L1_KNA1\",\n      \"operation\": \"projection\",\n      \"inputs\": [\"KNA1\"],\n      \"columns\": [\"KUNNR\", \"LAND1\", \"NAME1\"],\n      \"calculated_fields\": [],\n      \"details\": {},\n      \"reason\": \"Wrapper for KNA1 source.\"\n    },\n    {\n      \"id\": \"L3_FACT\",\n      \"operation\": \"join\",\n      \"inputs\": [\"L1_VBAK\", \"L1_KNA1\"],\n      \"columns\": [\"VBELN\", \"KUNNR\", \"NETWR\", \"LAND1\", \"NAME1\", \"NET_MARGIN_PCT\"],\n      \"calculated_fields\": [\n        {\n          \"name\": \"NET_MARGIN_PCT\",\n          \"formula\": \"CASE WHEN NETWR = 0 OR NETWR IS NULL THEN 0 ELSE ((NETWR - 0) / NETWR) END\",\n          \"label\": \"Net Margin Percentage\",\n          \"data_type\": \"DECIMAL(15,4)\"\n        }\n      ],\n      \"details\": {\n        \"join_type\": \"left\",\n        \"on\": [[\"L1_VBAK.KUNNR\", \"L1_KNA1.KUNNR\"]],\n        \"condition\": \"\",\n        \"formula\": \"\",\n        \"aggregation\": \"\"\n      },\n      \"reason\": \"Join VBAK and KNA1 on KUNNR as requested, adding row-level calculated field for Net Margin Percentage (using 0 for missing DISCOUNT).\"\n    }\n  ],\n  \"measures\": [\n    {\n      \"name\": \"SUM_NETWR\",\n      \"aggregation\": \"SUM\",\n      \"column\": \"NETWR\",\n      \"formula\": \"\",\n      \"label\": \"Total Net Value\"\n    },\n    {\n      \"name\": \"NET_MARGIN_PCT_KPI\",\n      \"aggregation\": \"FORMULA\",\n      \"column\": \"\",\n      \"formula\": \"CASE WHEN SUM_NETWR = 0 OR SUM_NETWR IS NULL THEN 0 ELSE (SUM_NETWR / SUM_NETWR) END\",\n      \"label\": \"Net Margin Percentage KPI\"\n    }\n  ],\n  \"dimensions\": [\n    \"LAND1\",\n    \"NAME1\"\n  ],\n  \"assumptions\": [\n    \"Assumed DISCOUNT is 0 or not applicable since no DISCOUNT column exists in the source metadata.\"\n  ],\n  \"blockers\": [\n    \"The source metadata lacks a DISCOUNT column required for the formula (NETWR - DISCOUNT) / NETWR.\"\n  ]\n}",
+      "attempt_errors": [
+        [
+          "Plan must contain exactly one L3 fact node, got 0.",
+          "Plan must contain exactly one analytic_model node, got 0."
+        ],
+        [
+          "JSON syntax error: Expecting property name enclosed in double quotes at line 89"
+        ],
+        [
+          "Plan must contain exactly one analytic_model node, got 0."
+        ]
+      ]
+    },
+    "run2": {
+      "status": "failed",
+      "attempts": 3,
+      "error": "Failed to generate a valid plan after 3 attempts. Last errors: Node 'L0_VBAK' (projection) selects column 'VBELN' which does not exist in its input(s) or existing metadata. Available: []; Node 'L0_VBAK' (projection) selects column 'ERDAT' which does not exist in its input(s) or existing metadata. Available: []; Node 'L0_VBAK' (projection) selects column 'KUNNR' which does not exist in its input(s) or existing metadata. Available: []; Node 'L0_VBAK' (projection) selects column 'STATUS' which does not exist in its input(s) or existing metadata. Available: []; Node 'L0_VBAK' (projection) selects column 'NETWR' which does not exist in its input(s) or existing metadata. Available: []; Node 'L0_VBAK' (projection) selects column 'WAERK' which does not exist in its input(s) or existing metadata. Available: []; Node 'L0_KNA1' (projection) selects column 'KUNNR' which does not exist in its input(s) or existing metadata. Available: []; Node 'L0_KNA1' (projection) selects column 'NAME1' which does not exist in its input(s) or existing metadata. Available: []; Node 'L0_KNA1' (projection) selects column 'LAND1' which does not exist in its input(s) or existing metadata. Available: []; Node 'L0_KNA1' (projection) selects column 'REGIO' which does not exist in its input(s) or existing metadata. Available: []; Node 'L0_KNA1' (projection) selects column 'ORT01' which does not exist in its input(s) or existing metadata. Available: []",
+      "last_response": "{\n \"analysis\": [\n  \"The requirement asks to calculate Net Margin Percentage = (NETWR - DISCOUNT) / NETWR grouped by Customer Country (LAND1), joining VBAK with KNA1 on KUNNR.\",\n  \"However, the source table VBAK does not contain a DISCOUNT column in its metadata. This is a blocker.\",\n  \"Nevertheless, to satisfy structural constraints, we will map the available columns: VBAK (VBELN, ERDAT, KUNNR, STATUS, NETWR, WAERK) and KNA1 (KUNNR, NAME1, LAND1, REGIO, ORT01).\"\n ],\n \"nodes\": [\n  {\n   \"id\": \"L0_VBAK\",\n   \"operation\": \"projection\",\n   \"inputs\": [],\n   \"columns\": [\n    \"VBELN\",\n    \"ERDAT\",\n    \"KUNNR\",\n    \"STATUS\",\n    \"NETWR\",\n    \"WAERK\"\n   ],\n   \"calculated_fields\": [],\n   \"details\": {\n    \"join_type\": \"\",\n    \"on\": [],\n    \"condition\": \"\",\n    \"formula\": \"\",\n    \"aggregation\": \"\"\n   },\n   \"reason\": \"Expose base table VBAK with all required columns.\"\n  },\n  {\n   \"id\": \"L1_VBAK\",\n   \"operation\": \"projection\",\n   \"inputs\": [\n    \"L0_VBAK\"\n   ],\n   \"columns\": [\n    \"VBELN\",\n    \"ERDAT\",\n    \"KUNNR\",\n    \"STATUS\",\n    \"NETWR\",\n    \"WAERK\"\n   ],\n   \"calculated_fields\": [],\n   \"details\": {\n    \"join_type\": \"\",\n    \"on\": [],\n    \"condition\": \"\",\n    \"formula\": \"\",\n    \"aggregation\": \"\"\n   },\n   \"reason\": \"L1 wrapper for VBAK.\"\n  },\n  {\n   \"id\": \"L0_KNA1\",\n   \"operation\": \"projection\",\n   \"inputs\": [],\n   \"columns\": [\n    \"KUNNR\",\n    \"NAME1\",\n    \"LAND1\",\n    \"REGIO\",\n    \"ORT01\"\n   ],\n   \"calculated_fields\": [],\n   \"details\": {\n    \"join_type\": \"\",\n    \"on\": [],\n    \"condition\": \"\",\n    \"formula\": \"\",\n    \"aggregation\": \"\"\n   },\n   \"reason\": \"Expose base table KNA1 with all required columns.\"\n  },\n  {\n   \"id\": \"L1_KNA1\",\n   \"operation\": \"projection\",\n   \"inputs\": [\n    \"L0_KNA1\"\n   ],\n   \"columns\": [\n    \"KUNNR\",\n    \"NAME1\",\n    \"LAND1\",\n    \"REGIO\",\n    \"ORT01\"\n   ],\n   \"calculated_fields\": [],\n   \"details\": {\n    \"join_type\": \"\",\n    \"on\": [],\n    \"condition\": \"\",\n    \"formula\": \"\",\n    \"aggregation\": \"\"\n   },\n   \"reason\": \"L1 wrapper for KNA1.\"\n  },\n  {\n   \"id\": \"L3_FACT\",\n   \"operation\": \"join\",\n   \"inputs\": [\n    \"L1_VBAK\",\n    \"L1_KNA1\"\n   ],\n   \"columns\": [\n    \"VBELN\",\n    \"ERDAT\",\n    \"KUNNR\",\n    \"STATUS\",\n    \"NETWR\",\n    \"WAERK\",\n    \"NAME1\",\n    \"LAND1\",\n    \"REGIO\",\n    \"ORT01\",\n    \"DISCOUNT\",\n    \"NET_MARGIN_PERCENTAGE\"\n   ],\n   \"calculated_fields\": [\n    {\n     \"name\": \"DISCOUNT\",\n     \"formula\": \"CAST(0 AS DECIMAL(15,2))\",\n     \"label\": \"Discount\",\n     \"data_type\": \"DECIMAL(15,2)\"\n    },\n    {\n     \"name\": \"NET_MARGIN_PERCENTAGE\",\n     \"formula\": \"CASE WHEN NETWR = 0 OR NETWR IS NULL THEN 0 ELSE ((NETWR - 0) / NETWR) END\",\n     \"label\": \"Net Margin Percentage\",\n     \"data_type\": \"DECIMAL(15,2)\"\n    }\n   ],\n   \"details\": {\n    \"join_type\": \"left\",\n    \"on\": [\n     [\n      \"L1_VBAK.KUNNR\",\n      \"L1_KNA1.KUNNR\"\n     ]\n    ],\n    \"condition\": \"\",\n    \"formula\": \"\",\n    \"aggregation\": \"\"\n   },\n   \"reason\": \"Join VBAK with KNA1 on KUNNR using a LEFT join as evidenced by 100% key match with N:1 cardinality.\"\n  },\n  {\n   \"id\": \"L4_ANALYTIC_MODEL\",\n   \"operation\": \"analytic_model\",\n   \"inputs\": [\n    \"L3_FACT\"\n   ],\n   \"columns\": [\n    \"LAND1\",\n    \"REGIO\",\n    \"ORT01\",\n    \"STATUS\",\n    \"WAERK\"\n   ],\n   \"calculated_fields\": [],\n   \"details\": {\n    \"join_type\": \"\",\n    \"on\": [],\n    \"condition\": \"\",\n    \"formula\": \"\",\n    \"aggregation\": \"\"\n   },\n   \"reason\": \"Expose analytic model with dimension columns and measures.\"\n  }\n ],\n \"measures\": [\n  {\n   \"name\": \"SUM_NETWR\",\n   \"aggregation\": \"SUM\",\n   \"column\": \"NETWR\",\n   \"formula\": \"\",\n   \"label\": \"Sum of Net Value\"\n  },\n  {\n   \"name\": \"SUM_DISCOUNT\",\n   \"aggregation\": \"SUM\",\n   \"column\": \"DISCOUNT\",\n   \"formula\": \"\",\n   \"label\": \"Sum of Discount\"\n  },\n  {\n   \"name\": \"NET_MARGIN_PERCENTAGE_KPI\",\n   \"aggregation\": \"FORMULA\",\n   \"column\": \"\",\n   \"formula\": \"CASE WHEN SUM_NETWR = 0 OR SUM_NETWR IS NULL THEN 0 ELSE ((SUM_NETWR - SUM_DISCOUNT) / SUM_NETWR) END\",\n   \"label\": \"Net Margin Percentage KPI\"\n  }\n ],\n \"dimensions\": [\n  \"LAND1\",\n  \"REGIO\",\n  \"ORT01\",\n  \"STATUS\",\n  \"WAERK\"\n ],\n \"assumptions\": [\n  \"Discount column is missing from source metadata and assumed to be 0 for the formula execution.\"\n ],\n \"blockers\": [\n  \"Table VBAK does not contain a DISCOUNT column as required by the formula (NETWR - DISCOUNT) / NETWR.\"\n ]\n}",
+      "attempt_errors": [
+        [
+          "Plan must contain exactly one L3 fact node, got 0.",
+          "Plan must contain exactly one analytic_model node, got 0."
+        ],
+        [
+          "Node 'L0_VBAK' (projection) selects column 'VBELN' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_VBAK' (projection) selects column 'KUNNR' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_VBAK' (projection) selects column 'NETWR' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_KNA1' (projection) selects column 'KUNNR' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_KNA1' (projection) selects column 'LAND1' which does not exist in its input(s) or existing metadata. Available: []"
+        ],
+        [
+          "Node 'L0_VBAK' (projection) selects column 'VBELN' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_VBAK' (projection) selects column 'ERDAT' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_VBAK' (projection) selects column 'KUNNR' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_VBAK' (projection) selects column 'STATUS' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_VBAK' (projection) selects column 'NETWR' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_VBAK' (projection) selects column 'WAERK' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_KNA1' (projection) selects column 'KUNNR' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_KNA1' (projection) selects column 'NAME1' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_KNA1' (projection) selects column 'LAND1' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_KNA1' (projection) selects column 'REGIO' which does not exist in its input(s) or existing metadata. Available: []",
+          "Node 'L0_KNA1' (projection) selects column 'ORT01' which does not exist in its input(s) or existing metadata. Available: []"
+        ]
+      ]
+    }
+  },
+  "case_c_two_plausible": {
+    "run1": {
+      "status": "success",
+      "attempts": 1,
+      "plan": {
+        "analysis": [
+          "The requirement asks to calculate Total Net Sales by Customer Country (LAND1 from KNA1). Both VBAK and VBRP contain NETWR.",
+          "Sales header VBAK joins with sales item VBRP on VBELN with 1:N cardinality (Evidence: 'VBELN key match between VBAK and VBRP is 100.0% (1:N cardinality; VBRP has up to 2 rows per key)').",
+          "Sales header VBAK joins with customer KNA1 on KUNNR with N:1 cardinality (Evidence: 'KUNNR key match between VBAK and KNA1 is 100.0% (N:1 cardinality; VBAK has up to 2 rows per key)').",
+          "The net sales measure should come from VBRP.NETWR (item level net value) or VBAK.NETWR (header level). Since VBRP holds item details, we use VBRP.NETWR for total net sales.",
+          "We create L1 wrapper datasets for VBAK, VBRP, and KNA1.",
+          "We create an L3 fact view joining VBAK and VBRP, and then joining KNA1, exposing LAND1 and NETWR.",
+          "We create an L4 analytic model on top of the L3 fact view."
+        ],
+        "nodes": [
+          {
+            "id": "L1_VBAK",
+            "operation": "projection",
+            "inputs": [
+              "VBAK"
+            ],
+            "columns": [
+              "VBELN",
+              "KUNNR",
+              "NETWR"
+            ],
+            "calculated_fields": [],
+            "details": {
+              "join_type": "",
+              "on": [],
+              "condition": "",
+              "formula": "",
+              "aggregation": ""
+            },
+            "reason": "Expose necessary columns from VBAK",
+            "is_existing": false,
+            "is_wrapper": false,
+            "is_projection_enabled": false,
+            "is_filter_enabled": false,
+            "layer": ""
+          },
+          {
+            "id": "L1_VBRP",
+            "operation": "projection",
+            "inputs": [
+              "VBRP"
+            ],
+            "columns": [
+              "VBELN",
+              "POSNR",
+              "NETWR"
+            ],
+            "calculated_fields": [],
+            "details": {
+              "join_type": "",
+              "on": [],
+              "condition": "",
+              "formula": "",
+              "aggregation": ""
+            },
+            "reason": "Expose necessary columns from VBRP",
+            "is_existing": false,
+            "is_wrapper": false,
+            "is_projection_enabled": false,
+            "is_filter_enabled": false,
+            "layer": ""
+          },
+          {
+            "id": "L1_KNA1",
+            "operation": "projection",
+            "inputs": [
+              "KNA1"
+            ],
+            "columns": [
+              "KUNNR",
+              "LAND1"
+            ],
+            "calculated_fields": [],
+            "details": {
+              "join_type": "",
+              "on": [],
+              "condition": "",
+              "formula": "",
+              "aggregation": ""
+            },
+            "reason": "Expose customer country from KNA1",
+            "is_existing": false,
+            "is_wrapper": false,
+            "is_projection_enabled": false,
+            "is_filter_enabled": false,
+            "layer": ""
+          },
+          {
+            "id": "L3_FACT_SALES",
+            "operation": "join",
+            "inputs": [
+              "L1_VBAK",
+              "L1_VBRP",
+              "L1_KNA1"
+            ],
+            "columns": [
+              "VBELN",
+              "POSNR",
+              "KUNNR",
+              "LAND1",
+              "ITEM_NETWR"
+            ],
+            "calculated_fields": [
+              {
+                "name": "ITEM_NETWR",
+                "formula": "L1_VBRP.NETWR",
+                "label": "Item Net Sales",
+                "data_type": "DECIMAL(15,2)"
+              }
+            ],
+            "details": {
+              "join_type": "left",
+              "on": [
+                [
+                  "L1_VBAK.VBELN",
+                  "L1_VBRP.VBELN"
+                ],
+                [
+                  "L1_VBAK.KUNNR",
+                  "L1_KNA1.KUNNR"
+                ]
+              ],
+              "condition": "",
+              "formula": "",
+              "aggregation": ""
+            },
+            "reason": "Combine sales header, items, and customer country data",
+            "is_existing": false,
+            "is_wrapper": false,
+            "is_projection_enabled": false,
+            "is_filter_enabled": false,
+            "layer": ""
+          },
+          {
+            "id": "L4_ANALYTIC_SALES",
+            "operation": "analytic_model",
+            "inputs": [
+              "L3_FACT_SALES"
+            ],
+            "columns": [
+              "LAND1"
+            ],
+            "calculated_fields": [],
+            "details": {
+              "join_type": "",
+              "on": [],
+              "condition": "",
+              "formula": "",
+              "aggregation": ""
+            },
+            "reason": "Expose analytic model for Total Net Sales by Customer Country",
+            "is_existing": false,
+            "is_wrapper": false,
+            "is_projection_enabled": false,
+            "is_filter_enabled": false,
+            "layer": ""
+          }
+        ],
+        "measures": [
+          {
+            "name": "TOTAL_NET_SALES",
+            "aggregation": "SUM",
+            "column": "ITEM_NETWR",
+            "formula": "",
+            "label": "Total Net Sales"
+          }
+        ],
+        "dimensions": [
+          "LAND1"
+        ],
+        "assumptions": [
+          "Item level NETWR from VBRP is used for calculating total net sales."
+        ],
+        "blockers": []
+      },
+      "attempt_errors": [
+        []
+      ]
+    },
+    "run2": {
+      "status": "success",
+      "attempts": 1,
+      "plan": {
+        "analysis": [
+          "The requirement is to calculate Total Net Sales by Customer Country (LAND1 from KNA1).",
+          "We need data from VBAK (Sales Document Header), VBRP (Sales Document Item), and KNA1 (Customer Master).",
+          "Both VBAK and VBRP contain NETWR. The requirement asks for Total Net Sales, which typically comes from VBRP item level or VBAK header level. Since VBRP contains item-level net values matching the items, we use VBRP.NETWR (or VBAK.NETWR depending on context, but VBRP item net values sum up to document totals). Let's use VBRP.NETWR as the base measure for net sales.",
+          "We join VBAK and VBRP on VBELN. Data profile confirms 100% key match with 1:N cardinality (VBRP has up to 2 rows per VBELN).",
+          "We join VBAK with KNA1 on KUNNR. Data profile confirms 100% key match with N:1 cardinality."
+        ],
+        "nodes": [
+          {
+            "id": "L1_VBAK",
+            "operation": "projection",
+            "inputs": [
+              "VBAK"
+            ],
+            "columns": [
+              "VBELN",
+              "KUNNR"
+            ],
+            "calculated_fields": [],
+            "details": {
+              "join_type": "",
+              "on": [],
+              "condition": "",
+              "formula": "",
+              "aggregation": ""
+            },
+            "reason": "Wrapper for VBAK selecting header keys.",
+            "is_existing": false,
+            "is_wrapper": false,
+            "is_projection_enabled": false,
+            "is_filter_enabled": false,
+            "layer": ""
+          },
+          {
+            "id": "L1_VBRP",
+            "operation": "projection",
+            "inputs": [
+              "VBRP"
+            ],
+            "columns": [
+              "VBELN",
+              "NETWR"
+            ],
+            "calculated_fields": [],
+            "details": {
+              "join_type": "",
+              "on": [],
+              "condition": "",
+              "formula": "",
+              "aggregation": ""
+            },
+            "reason": "Wrapper for VBRP selecting item net sales.",
+            "is_existing": false,
+            "is_wrapper": false,
+            "is_projection_enabled": false,
+            "is_filter_enabled": false,
+            "layer": ""
+          },
+          {
+            "id": "L1_KNA1",
+            "operation": "projection",
+            "inputs": [
+              "KNA1"
+            ],
+            "columns": [
+              "KUNNR",
+              "LAND1"
+            ],
+            "calculated_fields": [],
+            "details": {
+              "join_type": "",
+              "on": [],
+              "condition": "",
+              "formula": "",
+              "aggregation": ""
+            },
+            "reason": "Wrapper for KNA1 selecting customer country.",
+            "is_existing": false,
+            "is_wrapper": false,
+            "is_projection_enabled": false,
+            "is_filter_enabled": false,
+            "layer": ""
+          },
+          {
+            "id": "L3_FACT_SALES",
+            "operation": "join",
+            "inputs": [
+              "L1_VBAK",
+              "L1_VBRP",
+              "L1_KNA1"
+            ],
+            "columns": [
+              "VBELN",
+              "KUNNR",
+              "NETWR",
+              "LAND1",
+              "NET_SALES_VAL"
+            ],
+            "calculated_fields": [
+              {
+                "name": "NET_SALES_VAL",
+                "formula": "VBRP.NETWR",
+                "label": "Net Sales Value",
+                "data_type": "DECIMAL(15,2)"
+              }
+            ],
+            "details": {
+              "join_type": "left",
+              "on": [
+                [
+                  "L1_VBAK.VBELN",
+                  "L1_VBRP.VBELN"
+                ],
+                [
+                  "L1_VBAK.KUNNR",
+                  "L1_KNA1.KUNNR"
+                ]
+              ],
+              "condition": "",
+              "formula": "",
+              "aggregation": ""
+            },
+            "reason": "Combine sales header, items, and customer master to link net sales with customer country.",
+            "is_existing": false,
+            "is_wrapper": false,
+            "is_projection_enabled": false,
+            "is_filter_enabled": false,
+            "layer": ""
+          },
+          {
+            "id": "L4_ANALYTIC_SALES",
+            "operation": "analytic_model",
+            "inputs": [
+              "L3_FACT_SALES"
+            ],
+            "columns": [
+              "LAND1"
+            ],
+            "calculated_fields": [],
+            "details": {
+              "join_type": "",
+              "on": [],
+              "condition": "",
+              "formula": "",
+              "aggregation": ""
+            },
+            "reason": "Expose analytic model for reporting by customer country.",
+            "is_existing": false,
+            "is_wrapper": false,
+            "is_projection_enabled": false,
+            "is_filter_enabled": false,
+            "layer": ""
+          }
+        ],
+        "measures": [
+          {
+            "name": "TOTAL_NET_SALES",
+            "aggregation": "SUM",
+            "column": "NET_SALES_VAL",
+            "formula": "",
+            "label": "Total Net Sales"
+          }
+        ],
+        "dimensions": [
+          "LAND1"
+        ],
+        "assumptions": [
+          "VBRP.NETWR is used as the primary source for item net sales."
+        ],
+        "blockers": []
+      },
+      "attempt_errors": [
+        []
+      ]
+    }
+  }
+}

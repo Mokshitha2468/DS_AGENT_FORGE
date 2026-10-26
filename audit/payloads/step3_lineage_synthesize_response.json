@@ -1,0 +1,233 @@
+{
+  "L3_FACT_SALES": {
+    "view_id": "L3_FACT_SALES",
+    "view_name": "L3_FACT_SALES",
+    "nodes": [
+      {
+        "id": "src_L1_VBAK",
+        "name": "L1_VBAK",
+        "node_type": "SOURCE",
+        "is_existing": true,
+        "columns": [
+          "VBELN",
+          "KUNNR",
+          "NETWR"
+        ],
+        "details": {
+          "join_type": "inner",
+          "key_pairs": [],
+          "included_columns": [],
+          "excluded_columns": [],
+          "renamed_columns": {},
+          "calculation_name": "",
+          "expression": "",
+          "data_type": "Decimal",
+          "filter_expression": "",
+          "union_all": false,
+          "output_name": ""
+        },
+        "position": {
+          "x": 60.0,
+          "y": 80.0
+        },
+        "errors": [
+          "Join key 'L1_VBAK.VBELN' in 'Left Join' does not exist in upstream columns.",
+          "Join key 'L1_VBAK.KUNNR' in 'Left Join' does not exist in upstream columns."
+        ]
+      },
+      {
+        "id": "src_L1_VBRP",
+        "name": "L1_VBRP",
+        "node_type": "SOURCE",
+        "is_existing": true,
+        "columns": [
+          "VBELN",
+          "POSNR"
+        ],
+        "details": {
+          "join_type": "inner",
+          "key_pairs": [],
+          "included_columns": [],
+          "excluded_columns": [],
+          "renamed_columns": {},
+          "calculation_name": "",
+          "expression": "",
+          "data_type": "Decimal",
+          "filter_expression": "",
+          "union_all": false,
+          "output_name": ""
+        },
+        "position": {
+          "x": 60.0,
+          "y": 240.0
+        },
+        "errors": [
+          "Join key 'L1_VBRP.VBELN' in 'Left Join' does not exist in upstream columns."
+        ]
+      },
+      {
+        "id": "src_L1_KNA1",
+        "name": "L1_KNA1",
+        "node_type": "SOURCE",
+        "is_existing": true,
+        "columns": [
+          "KUNNR",
+          "LAND1"
+        ],
+        "details": {
+          "join_type": "inner",
+          "key_pairs": [],
+          "included_columns": [],
+          "excluded_columns": [],
+          "renamed_columns": {},
+          "calculation_name": "",
+          "expression": "",
+          "data_type": "Decimal",
+          "filter_expression": "",
+          "union_all": false,
+          "output_name": ""
+        },
+        "position": {
+          "x": 60.0,
+          "y": 400.0
+        },
+        "errors": [
+          "Join key 'L1_KNA1.KUNNR' in 'Left Join' does not exist in upstream columns."
+        ]
+      },
+      {
+        "id": "join_l3_fact_sales",
+        "name": "Left Join",
+        "node_type": "JOIN",
+        "is_existing": false,
+        "columns": [],
+        "details": {
+          "join_type": "LEFT",
+          "key_pairs": [
+            [
+              "L1_VBAK.VBELN",
+              "L1_VBRP.VBELN"
+            ],
+            [
+              "L1_VBAK.KUNNR",
+              "L1_KNA1.KUNNR"
+            ]
+          ],
+          "included_columns": [],
+          "excluded_columns": [],
+          "renamed_columns": {},
+          "calculation_name": "",
+          "expression": "",
+          "data_type": "Decimal",
+          "filter_expression": "",
+          "union_all": false,
+          "output_name": ""
+        },
+        "position": {
+          "x": 360.0,
+          "y": 240.0
+        },
+        "errors": [
+          "Join key 'L1_VBAK.VBELN' in 'Left Join' does not exist in upstream columns.",
+          "Join key 'L1_VBRP.VBELN' in 'Left Join' does not exist in upstream columns.",
+          "Join key 'L1_VBAK.KUNNR' in 'Left Join' does not exist in upstream columns.",
+          "Join key 'L1_KNA1.KUNNR' in 'Left Join' does not exist in upstream columns."
+        ]
+      },
+      {
+        "id": "calc_order_count",
+        "name": "Order_Count",
+        "node_type": "CALCULATION",
+        "is_existing": false,
+        "columns": [],
+        "details": {
+          "join_type": "inner",
+          "key_pairs": [],
+          "included_columns": [],
+          "excluded_columns": [],
+          "renamed_columns": {},
+          "calculation_name": "Order_Count",
+          "expression": "1",
+          "data_type": "Decimal",
+          "filter_expression": "",
+          "union_all": false,
+          "output_name": ""
+        },
+        "position": {
+          "x": 580.0,
+          "y": 240.0
+        },
+        "errors": []
+      },
+      {
+        "id": "output_l3_fact_sales",
+        "name": "L3_FACT_SALES",
+        "node_type": "OUTPUT",
+        "is_existing": false,
+        "columns": [
+          "VBELN",
+          "KUNNR",
+          "NETWR",
+          "LAND1",
+          "Order_Count"
+        ],
+        "details": {
+          "join_type": "inner",
+          "key_pairs": [],
+          "included_columns": [],
+          "excluded_columns": [],
+          "renamed_columns": {},
+          "calculation_name": "",
+          "expression": "",
+          "data_type": "Decimal",
+          "filter_expression": "",
+          "union_all": false,
+          "output_name": "L3_FACT_SALES"
+        },
+        "position": {
+          "x": 800.0,
+          "y": 240.0
+        },
+        "errors": []
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge_src_L1_VBAK_join_l3_fact_sales",
+        "source": "src_L1_VBAK",
+        "target": "join_l3_fact_sales",
+        "source_handle": null,
+        "target_handle": null
+      },
+      {
+        "id": "edge_src_L1_VBRP_join_l3_fact_sales",
+        "source": "src_L1_VBRP",
+        "target": "join_l3_fact_sales",
+        "source_handle": null,
+        "target_handle": null
+      },
+      {
+        "id": "edge_src_L1_KNA1_join_l3_fact_sales",
+        "source": "src_L1_KNA1",
+        "target": "join_l3_fact_sales",
+        "source_handle": null,
+        "target_handle": null
+      },
+      {
+        "id": "edge_join_l3_fact_sales_calc_order_count",
+        "source": "join_l3_fact_sales",
+        "target": "calc_order_count",
+        "source_handle": null,
+        "target_handle": null
+      },
+      {
+        "id": "edge_calc_order_count_output_l3_fact_sales",
+        "source": "calc_order_count",
+        "target": "output_l3_fact_sales",
+        "source_handle": null,
+        "target_handle": null
+      }
+    ],
+    "version": 1
+  }
+}

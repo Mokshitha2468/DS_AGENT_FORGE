@@ -1,0 +1,117 @@
+{
+  "requirement": "Calculate Total Net Sales (sum of NETWR from VBAK) and Order Count (sum of Order_Count = 1) grouped by Customer Country (LAND1 from KNA1). Join VBAK with VBRP on VBELN and VBAK with KNA1 on KUNNR. Explicitly qualify join keys as L1_VBAK.VBELN, L1_VBRP.VBELN and L1_VBAK.KUNNR, L1_KNA1.KUNNR.",
+  "metadata": [
+    {
+      "name": "VBAK",
+      "business_name": "Sales Document Header",
+      "columns": [
+        {
+          "name": "VBELN",
+          "data_type": "NVARCHAR(10)",
+          "is_key": true,
+          "semantic_role": "key"
+        },
+        {
+          "name": "ERDAT",
+          "data_type": "DATE",
+          "semantic_role": "date"
+        },
+        {
+          "name": "KUNNR",
+          "data_type": "NVARCHAR(10)",
+          "semantic_role": "dimension"
+        },
+        {
+          "name": "STATUS",
+          "data_type": "NVARCHAR(20)",
+          "semantic_role": "dimension"
+        },
+        {
+          "name": "NETWR",
+          "data_type": "DECIMAL(15,2)",
+          "semantic_role": "measure",
+          "aggregation": "SUM"
+        },
+        {
+          "name": "WAERK",
+          "data_type": "NVARCHAR(5)",
+          "semantic_role": "dimension"
+        }
+      ]
+    },
+    {
+      "name": "VBRP",
+      "business_name": "Sales Document Item",
+      "columns": [
+        {
+          "name": "VBELN",
+          "data_type": "NVARCHAR(10)",
+          "is_key": true,
+          "semantic_role": "key"
+        },
+        {
+          "name": "POSNR",
+          "data_type": "NUMC(6)",
+          "is_key": true,
+          "semantic_role": "key"
+        },
+        {
+          "name": "MATNR",
+          "data_type": "NVARCHAR(18)",
+          "semantic_role": "dimension"
+        },
+        {
+          "name": "FKIMG",
+          "data_type": "DECIMAL(13,3)",
+          "semantic_role": "measure",
+          "aggregation": "SUM"
+        },
+        {
+          "name": "NETWR",
+          "data_type": "DECIMAL(15,2)",
+          "semantic_role": "measure",
+          "aggregation": "SUM"
+        }
+      ]
+    },
+    {
+      "name": "KNA1",
+      "business_name": "Customer Master",
+      "columns": [
+        {
+          "name": "KUNNR",
+          "data_type": "NVARCHAR(10)",
+          "is_key": true,
+          "semantic_role": "key"
+        },
+        {
+          "name": "NAME1",
+          "data_type": "NVARCHAR(35)",
+          "semantic_role": "dimension"
+        },
+        {
+          "name": "LAND1",
+          "data_type": "NVARCHAR(3)",
+          "semantic_role": "dimension"
+        },
+        {
+          "name": "REGIO",
+          "data_type": "NVARCHAR(3)",
+          "semantic_role": "dimension"
+        },
+        {
+          "name": "ORT01",
+          "data_type": "NVARCHAR(35)",
+          "semantic_role": "dimension"
+        }
+      ]
+    }
+  ],
+  "mock_data": {
+    "VBAK": "VBELN,ERDAT,KUNNR,STATUS,NETWR,WAERK\n1001,20260101,CUST1,Completed,500.00,EUR\n1002,20260102,CUST2,Completed,1200.00,EUR\n1003,20260103,CUST1,Open,300.00,EUR\n",
+    "VBRP": "VBELN,POSNR,MATNR,FKIMG,NETWR\n1001,000010,MAT_A,5.0,250.00\n1001,000020,MAT_B,5.0,250.00\n1002,000010,MAT_A,10.0,1200.00\n1003,000010,MAT_C,2.0,300.00\n",
+    "KNA1": "KUNNR,NAME1,LAND1,REGIO,ORT01\nCUST1,Acme Corp,US,NY,New York\nCUST2,Global Industries,DE,BY,Munich\n"
+  },
+  "row_limit": 5,
+  "filename": "sap_sd_metadata.json"
+}

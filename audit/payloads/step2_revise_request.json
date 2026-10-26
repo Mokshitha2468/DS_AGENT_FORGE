@@ -1,0 +1,4 @@
+{
+  "plan_id": "e12561d3-30b5-409c-9e59-b4f3d55f6769",
+  "instruction": "Change join type between VBAK and KNA1 to a left outer join."
+}
